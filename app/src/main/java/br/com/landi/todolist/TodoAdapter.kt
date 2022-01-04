@@ -11,36 +11,31 @@ import br.com.landi.todolist.utils.Utils
 class TodoAdapter(val context: Context, var todoList : MutableList<ToDo>) : BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        var v: View? = null
-
-        if (convertView == null) {
-            val inflater =
-                context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            v = inflater.inflate(R.layout.model_todo, null)
+        val v: View = if (convertView == null) {
+            (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.model_todo, null)
         } else {
-            v = convertView
+            convertView
         }
 
-        v!!.setOnClickListener {
-            Utils.toastMessage(context,"Nome = ${getItem(position).name} e Id = ${getItem(position).id} e status = ${getItem(position).status} e tags = ${getItem(position).tags[0]}") }
-        v!!.setOnLongClickListener {
-            Utils.toastMessage(context,"Nome = ${getItem(position).name} e Id = ${getItem(position).id} e status = ${getItem(position).status}")
+        v.setOnClickListener {
+        }
+        v.setOnLongClickListener {
             return@setOnLongClickListener(true)
         }
 
         val c: ToDo = getItem(position)
 
         val txvTodoName =
-            v!!.findViewById<View>(R.id.txvTodoName) as TextView
+            v.findViewById<View>(R.id.txvTodoName) as TextView
         val txvTodoDate =
-            v!!.findViewById<View>(R.id.txvTodoItemDate) as TextView
+            v.findViewById<View>(R.id.txvTodoItemDate) as TextView
 
-        val cbTodoStatus = v!!.findViewById<View>(R.id.cbTodoStatus) as CheckBox
+        val cbTodoStatus = v.findViewById<View>(R.id.cbTodoStatus) as CheckBox
         cbTodoStatus.setOnCheckedChangeListener { buttonView, isChecked ->
             c.status = isChecked
         }
 
-        val imgDelete = v!!.findViewById<View>(R.id.imgDeleteItem) as ImageView
+        val imgDelete = v.findViewById<View>(R.id.imgDeleteItem) as ImageView
         imgDelete.setOnClickListener {
             with(AlertDialog(context)) {
                 cancelable = true
@@ -76,5 +71,9 @@ class TodoAdapter(val context: Context, var todoList : MutableList<ToDo>) : Base
     fun refresh(todoList: MutableList<ToDo>) {
         this.todoList = todoList
         notifyDataSetChanged()
+    }
+
+    private fun showToast(position: Int) {
+        Utils.toastMessage(context,"Nome = ${getItem(position).name} e Id = ${getItem(position).id} e status = ${getItem(position).status}")
     }
 }

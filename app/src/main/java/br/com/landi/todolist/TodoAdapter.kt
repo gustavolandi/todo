@@ -25,11 +25,6 @@ class TodoAdapter(val context: Context, var todoList : MutableList<ToDo>) : Base
 
         val c: ToDo = getItem(position)
 
-        val txvTodoName =
-            v.findViewById<View>(R.id.txvTodoName) as TextView
-        val txvTodoDate =
-            v.findViewById<View>(R.id.txvTodoItemDate) as TextView
-
         val cbTodoStatus = v.findViewById<View>(R.id.cbTodoStatus) as CheckBox
         cbTodoStatus.setOnCheckedChangeListener { buttonView, isChecked ->
             c.status = isChecked
@@ -50,10 +45,23 @@ class TodoAdapter(val context: Context, var todoList : MutableList<ToDo>) : Base
                     })
             }
         }
+
+        val txvTodoName =
+            v.findViewById<View>(R.id.txvTodoName) as TextView
+        val txvTodoDate =
+            v.findViewById<View>(R.id.txvTodoItemDate) as TextView
+        val txvTodoTags =
+            v.findViewById<View>(R.id.txvTodoItemTags) as TextView
         txvTodoName.setText(c.name)
         txvTodoDate.setText(c.date)
+        if (c.tags.size > 0) {
+            txvTodoTags.setVisibility(View.VISIBLE)
+            txvTodoTags.setText(c.tags.joinToString(";"))
+        } else {
+            txvTodoTags.setVisibility(View.GONE)
+        }
 
-        return v!!
+        return v
     }
 
     override fun getItem(position: Int): ToDo {

@@ -33,6 +33,8 @@ class AddItemActivity : AppCompatActivity() {
                 month1 = "0$month1"
             }
             txvData.setText("$day1/$month1/$year1")
+            val edtTags : EditText = findViewById(R.id.edtTags)
+            edtTags.requestFocus()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,11 +64,15 @@ class AddItemActivity : AppCompatActivity() {
             if (edtName.text.toString().isEmpty() || edtDate.text.toString().isEmpty()) {
 
             } else {
-                var tags = edtTags.text.toString().split(";")
+                var tags = if (edtTags.text.toString().trim().isEmpty()) {
+                    ArrayList()
+                } else {
+                    ArrayList(edtTags.text.toString().split(";"))
+                }
                 with(Intent()) {
                     putExtra(TODO_NAME, edtName.text.toString())
                     putExtra(TODO_DATE, edtDate.text.toString())
-                    putStringArrayListExtra(TODO_TAGS,  ArrayList(tags))
+                    putStringArrayListExtra(TODO_TAGS, tags)
                     setResult(Activity.RESULT_OK, this)
                 }
                 finish()

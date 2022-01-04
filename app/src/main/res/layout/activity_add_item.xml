@@ -21,11 +21,20 @@
         android:inputType="date"
         android:hint="Data"/>
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/edtTags"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/edtDate"
+        android:inputType="text"
+        android:hint="Tags"/>
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/btnAddItem"
-        android:layout_below="@+id/edtDate"
+        android:layout_below="@+id/edtTags"
         android:layout_marginTop="10dp"
         android:text="Adicionar Item"
         />

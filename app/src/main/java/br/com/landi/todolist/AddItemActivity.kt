@@ -11,7 +11,9 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import br.com.landi.todolist.utils.Utils.Companion.TODO_DATE
 import br.com.landi.todolist.utils.Utils.Companion.TODO_NAME
+import br.com.landi.todolist.utils.Utils.Companion.TODO_TAGS
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class AddItemActivity : AppCompatActivity() {
@@ -54,15 +56,19 @@ class AddItemActivity : AppCompatActivity() {
         val addButton : Button = findViewById(R.id.btnAddItem)
         val edtName : EditText = findViewById(R.id.edtName)
         val edtDate : EditText = findViewById(R.id.edtDate)
+        val edtTags : EditText = findViewById(R.id.edtTags)
         addButton.setOnClickListener {
 
             if (edtName.text.toString().isEmpty() || edtDate.text.toString().isEmpty()) {
 
             } else {
-                val data = Intent()
-                data.putExtra(TODO_NAME, edtName.text.toString())
-                data.putExtra(TODO_DATE, edtDate.text.toString())
-                setResult(Activity.RESULT_OK, data)
+                var tags = edtTags.text.toString().split(";")
+                with(Intent()) {
+                    putExtra(TODO_NAME, edtName.text.toString())
+                    putExtra(TODO_DATE, edtDate.text.toString())
+                    putStringArrayListExtra(TODO_TAGS,  ArrayList(tags))
+                    setResult(Activity.RESULT_OK, this)
+                }
                 finish()
             }
 

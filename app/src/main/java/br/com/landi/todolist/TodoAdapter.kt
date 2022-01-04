@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import br.com.landi.todolist.model.ToDo
+import br.com.landi.todolist.utils.Utils
 
 class TodoAdapter(val context: Context, var todoList : MutableList<ToDo>) : BaseAdapter() {
 
@@ -21,10 +22,9 @@ class TodoAdapter(val context: Context, var todoList : MutableList<ToDo>) : Base
         }
 
         v!!.setOnClickListener {
-            Toast.makeText(context," Nome = ${getItem(position).name} e Id = ${getItem(position).id} e status = ${getItem(position).status}" , Toast.LENGTH_LONG).show() }
-
+            Utils.toastMessage(context,"Nome = ${getItem(position).name} e Id = ${getItem(position).id} e status = ${getItem(position).status} e tags = ${getItem(position).tags[0]}") }
         v!!.setOnLongClickListener {
-            Toast.makeText(context," Nome = ${getItem(position).name} e Id = ${getItem(position).id} e status = ${getItem(position).status}" , Toast.LENGTH_LONG).show()
+            Utils.toastMessage(context,"Nome = ${getItem(position).name} e Id = ${getItem(position).id} e status = ${getItem(position).status}")
             return@setOnLongClickListener(true)
         }
 
@@ -42,16 +42,18 @@ class TodoAdapter(val context: Context, var todoList : MutableList<ToDo>) : Base
 
         val imgDelete = v!!.findViewById<View>(R.id.imgDeleteItem) as ImageView
         imgDelete.setOnClickListener {
-            val dialog = AlertDialog(v!!.context)
-            dialog.cancelable = true
-            dialog.message = "Deseja deletar o item selecionado?"
-            dialog.title = "Deletar Item"
-            dialog.showDialog(object : Process{
-                override fun execute() {
-                    todoList.removeAt(position)
-                    refresh(todoList)
-                }
-            })
+            with(AlertDialog(context)) {
+                cancelable = true
+                message = "Deseja deletar o item selecionado?"
+                title = "Deletar Item"
+                showDialog(object : Process{
+                        override fun execute() {
+                            todoList.removeAt(position)
+                            refresh(todoList)
+                            Utils.toastMessage(context,"Item deletado com sucesso")
+                        }
+                    })
+            }
         }
         txvTodoName.setText(c.name)
         txvTodoDate.setText(c.date)

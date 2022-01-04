@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ListView
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -49,8 +48,12 @@ class MainActivity : AppCompatActivity() {
         intentLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
-                    buildToDo(result.data?.getStringExtra(Utils.TODO_NAME),
-                        result.data?.getStringExtra(Utils.TODO_DATE))
+                    result.data?.getStringArrayListExtra(Utils.TODO_TAGS)?.let {
+                        buildToDo(result.data?.getStringExtra(Utils.TODO_NAME),
+                            result.data?.getStringExtra(Utils.TODO_DATE),
+                            it
+                        )
+                    }
                     addItemListView()
                 }
             }
@@ -60,8 +63,8 @@ class MainActivity : AppCompatActivity() {
         intentLauncher.launch(Intent(this,AddItemActivity::class.java))
     }
 
-    fun buildToDo(name: String?, date: String?) {
-        todoList.add(ToDo(++id,name?:"",false,date?:""))
+    fun buildToDo(name: String?, date: String?, tags: MutableList<String> = mutableListOf()) {
+        todoList.add(ToDo(++id,name?:"",false,date?:"",tags))
     }
 
     fun addItemListView(){

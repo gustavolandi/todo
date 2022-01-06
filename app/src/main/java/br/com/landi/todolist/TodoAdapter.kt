@@ -1,23 +1,31 @@
 package br.com.landi.todolist
 
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Rect
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import android.widget.RelativeLayout
 import br.com.landi.todolist.model.ToDo
 import br.com.landi.todolist.utils.Utils
 
-class TodoAdapter(val context: Context, var todoList : MutableList<ToDo>) : BaseAdapter() {
+
+class TodoAdapter(
+    val context: Context,
+    var todoList: MutableList<ToDo>
+) : BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val v: View = if (convertView == null) {
-            (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.model_todo, null)
-        } else {
-            convertView
-        }
+        val v: View = convertView
+            ?: (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(
+                R.layout.model_todo,
+                null
+            )
 
         v.setOnClickListener {
+            showToast(position)
         }
         v.setOnLongClickListener {
             return@setOnLongClickListener(true)
@@ -36,13 +44,13 @@ class TodoAdapter(val context: Context, var todoList : MutableList<ToDo>) : Base
                 cancelable = true
                 message = "Deseja deletar o item selecionado?"
                 title = "Deletar Item"
-                showDialog(object : Process{
-                        override fun execute() {
-                            todoList.removeAt(position)
-                            refresh(todoList)
-                            Utils.toastMessage(context,"Item deletado com sucesso")
-                        }
-                    })
+                showDialog(object : Process {
+                    override fun execute() {
+                        todoList.removeAt(position)
+                        refresh(todoList)
+                        Utils.toastMessage(context, "Item deletado com sucesso")
+                    }
+                })
             }
         }
 
@@ -50,19 +58,62 @@ class TodoAdapter(val context: Context, var todoList : MutableList<ToDo>) : Base
             v.findViewById<View>(R.id.txvTodoName) as TextView
         val txvTodoDate =
             v.findViewById<View>(R.id.txvTodoItemDate) as TextView
-        val txvTodoTags =
-            v.findViewById<View>(R.id.txvTodoItemTags) as TextView
-        txvTodoName.setText(c.name)
-        txvTodoDate.setText(c.date)
-        if (c.tags.size > 0) {
-            txvTodoTags.setVisibility(View.VISIBLE)
-            txvTodoTags.setText(c.tags.joinToString(";"))
-        } else {
-            txvTodoTags.setVisibility(View.GONE)
+        val relativeLayout =
+            v.findViewById<View>(R.id.rlLayoutModelToDo) as RelativeLayout
+        relativeLayout.removeAllViewsInLayout()
+        txvTodoName.text = c.name
+        txvTodoDate.text = c.date
+        var txSize = 0f
+        var id = 0
+        var firstId = 0
+        var line = 0
+        var belowId = 0
+        for (i in c.tags) {
+            val params = RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            val tv = TextView(context)
+            tv.text = i
+            tv.id = View.generateViewId()
+            tv.textSize = 15F
+            tv.background = v.resources.getDrawable(
+                R.drawable.bordered_rectangle_rounded_corners,
+                null
+            )
+            val textSize = (tv.textSize * i.length)
+            txSize += textSize
+            if (txSize >= Resources.getSystem().displayMetrics.widthPixels) {
+                belowId = firstId
+                firstId = tv.id
+                params.addRule(RelativeLayout.BELOW, belowId)
+                params.setMargins(5, 5, 0, 0)
+                txSize = 0f
+                line++
+            } else {
+                params.addRule(RelativeLayout.RIGHT_OF, id)
+                params.setMargins(5, 5, 0, 0)
+                if (line != 0) {
+                    params.addRule(RelativeLayout.BELOW, belowId)
+                }
+            }
+            tv.layoutParams = params
+            relativeLayout.addView(tv)
+            if (id == 0) {
+                firstId = tv.id
+            }
+            id = tv.id
         }
-
         return v
     }
+
+    fun View.isVisible() : Boolean {
+        val location = IntArray(2)
+        this.getLocationOnScreen(location)
+        println("locationX =  ${location[0]}")
+        return location[0] < Resources.getSystem().displayMetrics.widthPixels
+    }
+
 
     override fun getItem(position: Int): ToDo {
         return todoList.get(position)
@@ -82,6 +133,16 @@ class TodoAdapter(val context: Context, var todoList : MutableList<ToDo>) : Base
     }
 
     private fun showToast(position: Int) {
-        Utils.toastMessage(context,"Nome = ${getItem(position).name} e Id = ${getItem(position).id} e status = ${getItem(position).status}")
+        Utils.toastMessage(
+            context, getItem(position).toString()
+        )
+    }
+
+    fun getScreenWidth(): Int {
+        return Resources.getSystem().getDisplayMetrics().widthPixels
+    }
+
+    fun getScreenHeight(): Int {
+        return Resources.getSystem().getDisplayMetrics().heightPixels
     }
 }

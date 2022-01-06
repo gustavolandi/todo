@@ -3,8 +3,11 @@ package br.com.landi.todolist
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
+import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.RelativeLayout
@@ -60,9 +63,75 @@ class TodoAdapter(
             v.findViewById<View>(R.id.txvTodoItemDate) as TextView
         val relativeLayout =
             v.findViewById<View>(R.id.rlLayoutModelToDo) as RelativeLayout
-        relativeLayout.removeAllViewsInLayout()
+//        relativeLayout.removeAllViewsInLayout()
         txvTodoName.text = c.name
         txvTodoDate.text = c.date
+        addTags(v,c)
+//        var txSize = 0f
+//        var id = 0
+//        var firstId = 0
+//        var line = 0
+//        var belowId = 0
+//        for (i in c.tags) {
+//            val params = RelativeLayout.LayoutParams(
+//                ViewGroup.LayoutParams.WRAP_CONTENT,
+//                ViewGroup.LayoutParams.WRAP_CONTENT
+//            )
+//            val tv = TextView(context)
+//            tv.text = i
+//            tv.id = View.generateViewId()
+//            tv.textSize = 15F
+//            tv.background = v.resources.getDrawable(
+//                R.drawable.bordered_rectangle_rounded_corners,
+//                null
+//            )
+//            val textSize = (tv.textSize * i.length)
+//            txSize += textSize
+//            if (txSize >= Resources.getSystem().displayMetrics.widthPixels) {
+//                belowId = firstId
+//                firstId = tv.id
+//                params.addRule(RelativeLayout.BELOW, belowId)
+//                params.setMargins(5, 5, 0, 0)
+//                txSize = 0f
+//                line++
+//            } else {
+//                params.addRule(RelativeLayout.RIGHT_OF, id)
+//                params.setMargins(5, 5, 0, 0)
+//                if (line != 0) {
+//                    params.addRule(RelativeLayout.BELOW, belowId)
+//                }
+//            }
+//            tv.layoutParams = params
+//            relativeLayout.addView(tv)
+//            if (id == 0) {
+//                firstId = tv.id
+//            }
+//            id = tv.id
+//        }
+        return v
+    }
+
+    override fun getItem(position: Int): ToDo {
+        return todoList.get(position)
+    }
+
+    override fun getItemId(position: Int): Long {
+        return todoList.get(position).id.toLong()
+    }
+
+    override fun getCount(): Int {
+        return todoList.size
+    }
+
+    private fun addTags(v: View,c: ToDo) {
+        val relativeLayout =
+            v.findViewById<View>(R.id.rlLayoutModelToDo) as RelativeLayout
+        if (c.tags.size == 0) {
+            relativeLayout.visibility = GONE
+            return
+        }
+        relativeLayout.visibility = VISIBLE
+        relativeLayout.removeAllViewsInLayout()
         var txSize = 0f
         var id = 0
         var firstId = 0
@@ -104,27 +173,6 @@ class TodoAdapter(
             }
             id = tv.id
         }
-        return v
-    }
-
-    fun View.isVisible() : Boolean {
-        val location = IntArray(2)
-        this.getLocationOnScreen(location)
-        println("locationX =  ${location[0]}")
-        return location[0] < Resources.getSystem().displayMetrics.widthPixels
-    }
-
-
-    override fun getItem(position: Int): ToDo {
-        return todoList.get(position)
-    }
-
-    override fun getItemId(position: Int): Long {
-        return todoList.get(position).id.toLong()
-    }
-
-    override fun getCount(): Int {
-        return todoList.size
     }
 
     fun refresh(todoList: MutableList<ToDo>) {
@@ -138,11 +186,4 @@ class TodoAdapter(
         )
     }
 
-    fun getScreenWidth(): Int {
-        return Resources.getSystem().getDisplayMetrics().widthPixels
-    }
-
-    fun getScreenHeight(): Int {
-        return Resources.getSystem().getDisplayMetrics().heightPixels
-    }
 }

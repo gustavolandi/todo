@@ -3,7 +3,6 @@ package br.com.landi.todolist
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ListView
@@ -91,6 +90,12 @@ class MainActivity : AppCompatActivity() {
                 "tag16",
                 "tag17"
             )
+        )
+        buildToDo(
+                "teste2", "01/01/2022", mutableListOf()
+        )
+        buildToDo(
+            "teste2", "01/01/2022", mutableListOf("tag1")
         )
     }
 

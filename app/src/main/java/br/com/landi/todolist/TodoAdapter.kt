@@ -9,6 +9,8 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.RelativeLayout
+import br.com.landi.todolist.dialog.AlertDialog
+import br.com.landi.todolist.dialog.Process
 import br.com.landi.todolist.model.ToDo
 import br.com.landi.todolist.utils.Utils
 

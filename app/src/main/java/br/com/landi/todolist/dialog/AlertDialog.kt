@@ -1,4 +1,4 @@
-package br.com.landi.todolist
+package br.com.landi.todolist.dialog
 
 import android.app.AlertDialog
 import android.content.Context

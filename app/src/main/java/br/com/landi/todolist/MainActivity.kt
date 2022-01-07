@@ -1,11 +1,12 @@
 package br.com.landi.todolist
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ListView
+import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -40,8 +41,37 @@ class MainActivity : AppCompatActivity() {
         } else if (id == R.id.addItem) {
             activityAddItem()
             return true
+        } else if (id == R.id.filterItem) {
+            filterOptions()
+            return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    fun filterOptions(){
+        dialogFilter()
+    }
+
+    fun dialogFilter() {
+        val listFilter = listOf("Sem filtro","Dia","Mês","Tag")
+        val dataAdapter: ArrayAdapter<String> = ArrayAdapter(
+            this,
+            R.layout.spinner_layout, listFilter
+        )
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        var context = this
+        with(Dialog(this)) {
+            setContentView(R.layout.dialog_filter)
+            setCancelable(true)
+            setCanceledOnTouchOutside(true)
+            val spinner = findViewById<RelativeLayout>(R.id.spinnerFilterTodo) as Spinner
+            spinner.setAdapter(dataAdapter)
+            val btnOk = findViewById<RelativeLayout>(R.id.btnSubmitFilterTodo) as RelativeLayout
+            btnOk.setOnClickListener {
+                dismiss()
+            }
+            show()
+        }
     }
 
     fun initComponents() {
@@ -76,36 +106,6 @@ class MainActivity : AppCompatActivity() {
     fun saveTodo(toDo: ToDo) {
         db.saveTodo(toDo)
         getTodosDb()
-    }
-
-    fun exampleTodo() {
-        buildToDo(
-            "teste", "01/01/2022", mutableListOf(
-                "tag1",
-                "tag2",
-                "tag3",
-                "tag4",
-                "tag5",
-                "tag6",
-                "tag7",
-                "tag8",
-                "tag9",
-                "tag10",
-                "tag11",
-                "tag12",
-                "tag13",
-                "tag14",
-                "tag15",
-                "tag16",
-                "tag17"
-            )
-        )
-        buildToDo(
-                "teste2", "01/01/2022", mutableListOf()
-        )
-        buildToDo(
-            "teste2", "01/01/2022", mutableListOf("tag1")
-        )
     }
 
     fun getTodosDb() {

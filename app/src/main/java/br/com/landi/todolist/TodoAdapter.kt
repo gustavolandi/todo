@@ -2,8 +2,7 @@ package br.com.landi.todolist
 
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.Rect
-import android.opengl.Visibility
+import android.database.sqlite.SQLiteDatabase
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -49,6 +48,8 @@ class TodoAdapter(
                 title = "Deletar Item"
                 showDialog(object : Process {
                     override fun execute() {
+                        val db = SQLiteHelper(context)
+                        db.deleteItemById(getItemId(position))
                         todoList.removeAt(position)
                         refresh(todoList)
                         Utils.toastMessage(context, "Item deletado com sucesso")
@@ -61,53 +62,9 @@ class TodoAdapter(
             v.findViewById<View>(R.id.txvTodoName) as TextView
         val txvTodoDate =
             v.findViewById<View>(R.id.txvTodoItemDate) as TextView
-        val relativeLayout =
-            v.findViewById<View>(R.id.rlLayoutModelToDo) as RelativeLayout
-//        relativeLayout.removeAllViewsInLayout()
         txvTodoName.text = c.name
         txvTodoDate.text = c.date
         addTags(v,c)
-//        var txSize = 0f
-//        var id = 0
-//        var firstId = 0
-//        var line = 0
-//        var belowId = 0
-//        for (i in c.tags) {
-//            val params = RelativeLayout.LayoutParams(
-//                ViewGroup.LayoutParams.WRAP_CONTENT,
-//                ViewGroup.LayoutParams.WRAP_CONTENT
-//            )
-//            val tv = TextView(context)
-//            tv.text = i
-//            tv.id = View.generateViewId()
-//            tv.textSize = 15F
-//            tv.background = v.resources.getDrawable(
-//                R.drawable.bordered_rectangle_rounded_corners,
-//                null
-//            )
-//            val textSize = (tv.textSize * i.length)
-//            txSize += textSize
-//            if (txSize >= Resources.getSystem().displayMetrics.widthPixels) {
-//                belowId = firstId
-//                firstId = tv.id
-//                params.addRule(RelativeLayout.BELOW, belowId)
-//                params.setMargins(5, 5, 0, 0)
-//                txSize = 0f
-//                line++
-//            } else {
-//                params.addRule(RelativeLayout.RIGHT_OF, id)
-//                params.setMargins(5, 5, 0, 0)
-//                if (line != 0) {
-//                    params.addRule(RelativeLayout.BELOW, belowId)
-//                }
-//            }
-//            tv.layoutParams = params
-//            relativeLayout.addView(tv)
-//            if (id == 0) {
-//                firstId = tv.id
-//            }
-//            id = tv.id
-//        }
         return v
     }
 

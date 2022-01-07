@@ -16,6 +16,7 @@ import br.com.landi.todolist.utils.Utils
 class MainActivity : AppCompatActivity() {
 
     private var todoList : MutableList<ToDo>  = mutableListOf()
+    private lateinit var db : SQLiteHelper
     private lateinit var listView : ListView
     private lateinit var intentLauncher : ActivityResultLauncher<Intent>
     private var id : Int = 0
@@ -45,6 +46,8 @@ class MainActivity : AppCompatActivity() {
 
     fun initComponents() {
         this.listView  = findViewById(R.id.lwtTodoView)
+        db = SQLiteHelper(this)
+        getTodosDb()
         addItemListView()
         intentLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -66,7 +69,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun buildToDo(name: String?, date: String?, tags: MutableList<String> = mutableListOf()) {
-        todoList.add(ToDo(++id, name ?: "", false, date ?: "", tags))
+        val toDo = ToDo(++id, name ?: "", false, date ?: "", tags)
+        saveTodo(toDo)
+        todoList.add(toDo)
+    }
+
+    fun saveTodo(toDo: ToDo) {
+        db.saveTodo(toDo)
     }
 
     fun exampleTodo() {
@@ -97,6 +106,10 @@ class MainActivity : AppCompatActivity() {
         buildToDo(
             "teste2", "01/01/2022", mutableListOf("tag1")
         )
+    }
+
+    fun getTodosDb() {
+        todoList = db.getToDo
     }
 
     fun addItemListView(){

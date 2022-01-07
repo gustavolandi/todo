@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
+import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
 import br.com.landi.todolist.utils.Utils.Companion.TODO_DATE
 import br.com.landi.todolist.utils.Utils.Companion.TODO_NAME
@@ -55,7 +56,7 @@ class AddItemActivity : AppCompatActivity() {
     }
 
     fun init() {
-        val addButton : Button = findViewById(R.id.btnAddItem)
+        val addButton : RelativeLayout = findViewById(R.id.btnAddItem)
         val edtName : EditText = findViewById(R.id.edtName)
         val edtDate : EditText = findViewById(R.id.edtDate)
         val edtTags : EditText = findViewById(R.id.edtTags)

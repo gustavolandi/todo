@@ -71,11 +71,11 @@ class MainActivity : AppCompatActivity() {
     fun buildToDo(name: String?, date: String?, tags: MutableList<String> = mutableListOf()) {
         val toDo = ToDo(++id, name ?: "", false, date ?: "", tags)
         saveTodo(toDo)
-        todoList.add(toDo)
     }
 
     fun saveTodo(toDo: ToDo) {
         db.saveTodo(toDo)
+        getTodosDb()
     }
 
     fun exampleTodo() {
@@ -110,6 +110,7 @@ class MainActivity : AppCompatActivity() {
 
     fun getTodosDb() {
         todoList = db.getToDo
+        todoList.sortBy { it.date }
     }
 
     fun addItemListView(){

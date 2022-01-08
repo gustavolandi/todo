@@ -12,6 +12,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import br.com.landi.todolist.model.ToDo
 import br.com.landi.todolist.utils.Utils
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 class MainActivity : AppCompatActivity() {
@@ -53,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun dialogFilter() {
-        val listFilter = listOf("Sem filtro","Dia","Mês","Tag")
+        val listFilter = listOf(NO_FILTER, FILTER_DAY, FILTER_MONTH, FILTER_TAG)
         val dataAdapter: ArrayAdapter<String> = ArrayAdapter(
             this,
             R.layout.spinner_layout, listFilter
@@ -65,13 +67,47 @@ class MainActivity : AppCompatActivity() {
             setCancelable(true)
             setCanceledOnTouchOutside(true)
             val spinner = findViewById<RelativeLayout>(R.id.spinnerFilterTodo) as Spinner
-            spinner.setAdapter(dataAdapter)
+            spinner.adapter = dataAdapter
             val btnOk = findViewById<RelativeLayout>(R.id.btnSubmitFilterTodo) as RelativeLayout
             btnOk.setOnClickListener {
+                when(spinner.selectedItem.toString()) {
+                     NO_FILTER -> noFilter()
+                     FILTER_DAY -> filterByDay()
+                     FILTER_MONTH -> filterByMonth()
+                     FILTER_TAG -> filterByTag()
+                }
                 dismiss()
             }
             show()
         }
+    }
+
+    fun noFilter(){
+        addItemListView(this.todoList)
+    }
+
+    fun filterByDay() {
+        val date = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            LocalDate.now()
+        } else {
+            TODO("VERSION.SDK_INT < O")
+        }
+        val todoList = todoList.filter { it.date == date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))}
+        addItemListView(todoList.toMutableList())
+    }
+
+    fun filterByMonth() {
+        val date = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            LocalDate.now().month.value
+        } else {
+            TODO("VERSION.SDK_INT < O")
+        }
+        val todoList = todoList.filter { it.date.substring(3,5).toInt() == date}
+        addItemListView(todoList.toMutableList())
+    }
+
+    fun filterByTag(){
+
     }
 
     fun initComponents() {
@@ -113,12 +149,19 @@ class MainActivity : AppCompatActivity() {
         todoList.sortBy { it.date }
     }
 
-    fun addItemListView(){
-        if (listView.getAdapter() != null) {
-            (listView.getAdapter() as TodoAdapter).refresh(this.todoList)
+    fun addItemListView(todoList : MutableList<ToDo> = this.todoList){
+        if (listView.adapter != null) {
+            (listView.adapter as TodoAdapter).refresh(todoList)
         } else {
-            listView.setAdapter(TodoAdapter(this, this.todoList))
+            listView.adapter = TodoAdapter(this, todoList)
         }
+    }
+
+    companion object {
+        private const val NO_FILTER = "Sem Filtro"
+        private const val FILTER_DAY = "Dia"
+        private const val FILTER_MONTH = "Mês"
+        private const val FILTER_TAG = "Tag"
     }
 
 }

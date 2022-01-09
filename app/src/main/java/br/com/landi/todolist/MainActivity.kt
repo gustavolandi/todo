@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import br.com.landi.todolist.model.ToDo
 import br.com.landi.todolist.utils.Utils
+import com.whiteelephant.monthpicker.MonthPickerDialog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -89,10 +90,10 @@ class MainActivity : AppCompatActivity() {
             val btnOk = findViewById<RelativeLayout>(R.id.btnSubmitFilterTodo) as RelativeLayout
             btnOk.setOnClickListener {
                 when(spinner.selectedItem.toString()) {
-                     NO_FILTER -> noFilter()
-                     FILTER_DAY -> filterByDay()
-                     FILTER_MONTH -> filterByMonth()
-                     FILTER_TAG -> filterByTag()
+                    NO_FILTER -> noFilter()
+                    FILTER_DAY -> filterByDay()
+                    FILTER_MONTH -> filterByMonth()
+                    FILTER_TAG -> filterByTag()
                 }
                 dismiss()
             }
@@ -120,7 +121,7 @@ class MainActivity : AppCompatActivity() {
                         val dateFormatted = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
                         val todoListFiltered = todoList.filter { it.date == dateFormatted }
                         addItemListView(todoListFiltered.toMutableList())
-                        val txv : TextView = findViewById(R.id.txvTodoFilter)
+                        val txv: TextView = findViewById(R.id.txvTodoFilter)
                         txv.text = dateFormatted
                     }
                 },
@@ -130,7 +131,7 @@ class MainActivity : AppCompatActivity() {
                         val dateFormatted = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
                         val todoListFiltered = todoList.filter { it.date == dateFormatted }
                         addItemListView(todoListFiltered.toMutableList())
-                        val txv : TextView = findViewById(R.id.txvTodoFilter)
+                        val txv: TextView = findViewById(R.id.txvTodoFilter)
                         txv.text = dateFormatted
                     }
                 },
@@ -152,10 +153,13 @@ class MainActivity : AppCompatActivity() {
                                     month1 = "0$month1"
                                 }
                                 val dateFormatted = "$day1/$month1/$year1"
-                                date = LocalDate.parse(dateFormatted,DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                                date = LocalDate.parse(
+                                    dateFormatted,
+                                    DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                                )
                                 val todoListFiltered = todoList.filter { it.date == dateFormatted }
                                 addItemListView(todoListFiltered.toMutableList())
-                                val txv : TextView = findViewById(R.id.txvTodoFilter)
+                                val txv: TextView = findViewById(R.id.txvTodoFilter)
                                 txv.text = dateFormatted
                             },
                             cal[Calendar.YEAR],
@@ -167,13 +171,13 @@ class MainActivity : AppCompatActivity() {
                 }
             )
         } else {
-            TODO()
+            TODO("VERSION.SDK_INT < O")
         }
 
 
     }
 
-    fun filterLayout(text: String, backAction : Action, nextAction: Action, txvAction: Action) {
+    fun filterLayout(text: String, backAction: Action, nextAction: Action, txvAction: Action) {
         val linearLayoutFilter : LinearLayout = findViewById(R.id.linearLayoutFilter)
         linearLayoutFilter.visibility = VISIBLE
         val txv : TextView = findViewById(R.id.txvTodoFilter)
@@ -186,13 +190,95 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun filterByMonth() {
-        val date = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            LocalDate.now().month.value
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            var date = LocalDate.now()
+            val todoListFiltered = todoList.filter {
+                it.date.substring(3, 5).toInt() == date.month.value &&
+                    it.date.substring(6).toInt() == date.year
+            }
+            addItemListView(todoListFiltered.toMutableList())
+            val context = this
+            filterLayout("${getMonth(date.month.value)} / ${date.year}",
+                object : Action {
+                    override fun execute() {
+                        date = date.minusMonths(1)
+                        val todoListFiltered = todoList.filter {
+                            it.date.substring(3, 5).toInt() == date.month.value &&
+                                    it.date.substring(6).toInt() == date.year
+                        }
+                        addItemListView(todoListFiltered.toMutableList())
+                        val txv: TextView = findViewById(R.id.txvTodoFilter)
+                        txv.text = "${getMonth(date.month.value)} / ${date.year}"
+                    }
+                },
+                object : Action {
+                    override fun execute() {
+                        date = date.plusMonths(1)
+                        val todoListFiltered = todoList.filter {
+                            it.date.substring(3, 5).toInt() == date.month.value &&
+                                    it.date.substring(6).toInt() == date.year
+                        }
+                        addItemListView(todoListFiltered.toMutableList())
+                        val txv: TextView = findViewById(R.id.txvTodoFilter)
+                        txv.text = "${getMonth(date.month.value)} / ${date.year}"
+                    }
+                },
+                object : Action {
+                    override fun execute() {
+                        val calendar = Calendar.getInstance()
+                        val builder = MonthPickerDialog.Builder(
+                            context,
+                            { selectedMonth, selectedYear ->
+                                date = LocalDate.of(selectedYear,selectedMonth+1,1)
+                                val todoListFiltered = todoList.filter {
+                                    it.date.substring(3, 5).toInt() == date.month.value &&
+                                            it.date.substring(6).toInt() == date.year
+                                }
+                                addItemListView(todoListFiltered.toMutableList())
+                                val txv: TextView = findViewById(R.id.txvTodoFilter)
+                                txv.text = "${getMonth(date.month.value)} / ${date.year}"
+                            },
+                            calendar[Calendar.YEAR],
+                            calendar[Calendar.MONTH]
+                        )
+                        builder
+                            .setMinYear(1990)
+                            .setActivatedYear(date.year)
+                            .setActivatedMonth(date.monthValue - 1)
+                            .setMaxYear(2030)
+                            .setTitle("Selecione o mês")
+                            .build()
+                            .show()
+
+                    }
+                }
+            )
         } else {
             TODO("VERSION.SDK_INT < O")
         }
-        val todoList = todoList.filter { it.date.substring(3,5).toInt() == date}
-        addItemListView(todoList.toMutableList())
+
+    }
+
+    fun dialog() {
+
+    }
+
+    fun getMonth(month: Int) : String {
+        return when(month) {
+            1 -> "Janeiro"
+            2 -> "Fevereiro"
+            3 -> "Março"
+            4 -> "Abril"
+            5 -> "Maio"
+            6 -> "Junho"
+            7 -> "Julho"
+            8 -> "Agosto"
+            9 -> "Setembro"
+            10 -> "Outubro"
+            11 -> "Novembro"
+            12 -> "Dezembro"
+            else -> ""
+         }
     }
 
     fun filterByTag(){
@@ -238,7 +324,7 @@ class MainActivity : AppCompatActivity() {
         todoList.sortBy { it.date }
     }
 
-    fun addItemListView(todoList : MutableList<ToDo> = this.todoList){
+    fun addItemListView(todoList: MutableList<ToDo> = this.todoList){
         if (listView.adapter != null) {
             (listView.adapter as TodoAdapter).refresh(todoList)
         } else {

@@ -75,7 +75,11 @@ class MainActivity : AppCompatActivity() {
 
     fun getTodosDb() {
         todoList = db.getToDo
-        todoList.sortBy { it.date }
+        if (validateBuildSdk()) {
+            todoList.sortBy { LocalDate.parse(it.date,DATE_PATTERN) }
+        } else {
+            TODO("VERSION.SDK_INT < O")
+        }
     }
 
     fun addItemListView(todoList: MutableList<ToDo> = this.todoList){
@@ -295,38 +299,40 @@ class MainActivity : AppCompatActivity() {
 
     fun filterByTag(){
         var tags : List<String> = db.getTags()
-        val tagsSortedBy: List<String> = tags.sortedWith( compareBy(String.CASE_INSENSITIVE_ORDER) { it })
-        val todoListFiltered = todoList.filter {it.tags.contains(tagsSortedBy[tagSelected])}
-        addItemListView(todoListFiltered.toMutableList())
-        filterLayout(tagsSortedBy[tagSelected],
-            nextAction = object : Action {
-                override fun execute() {
-                    if (++tagSelected >= tagsSortedBy.size) {
-                        tagSelected = 0
+        if (tags.size > 0) {
+            val tagsSortedBy: List<String> = tags.sortedWith( compareBy(String.CASE_INSENSITIVE_ORDER) { it })
+            val todoListFiltered = todoList.filter {it.tags.contains(tagsSortedBy[tagSelected])}
+            addItemListView(todoListFiltered.toMutableList())
+            filterLayout(tagsSortedBy[tagSelected],
+                nextAction = object : Action {
+                    override fun execute() {
+                        if (++tagSelected >= tagsSortedBy.size) {
+                            tagSelected = 0
+                        }
+                        val todoListFiltered = todoList.filter {it.tags.contains(tagsSortedBy[tagSelected])}
+                        addItemListView(todoListFiltered.toMutableList())
+                        val txv : TextView = findViewById(R.id.txvTodoFilter)
+                        txv.text = tagsSortedBy[tagSelected]
                     }
-                    val todoListFiltered = todoList.filter {it.tags.contains(tagsSortedBy[tagSelected])}
-                    addItemListView(todoListFiltered.toMutableList())
-                    val txv : TextView = findViewById(R.id.txvTodoFilter)
-                    txv.text = tagsSortedBy[tagSelected]
-                }
-            },
-            backAction = object : Action {
-                override fun execute() {
-                    if (--tagSelected < 0) {
-                        tagSelected = tagsSortedBy.size - 1
+                },
+                backAction = object : Action {
+                    override fun execute() {
+                        if (--tagSelected < 0) {
+                            tagSelected = tagsSortedBy.size - 1
+                        }
+                        val todoListFiltered = todoList.filter {it.tags.contains(tagsSortedBy[tagSelected])}
+                        addItemListView(todoListFiltered.toMutableList())
+                        val txv : TextView = findViewById(R.id.txvTodoFilter)
+                        txv.text = tagsSortedBy[tagSelected]
                     }
-                    val todoListFiltered = todoList.filter {it.tags.contains(tagsSortedBy[tagSelected])}
-                    addItemListView(todoListFiltered.toMutableList())
-                    val txv : TextView = findViewById(R.id.txvTodoFilter)
-                    txv.text = tagsSortedBy[tagSelected]
+                },
+                txvAction = object : Action {
+                    override fun execute() {
+                        dialogFilterTag(tagsSortedBy)
+                    }
                 }
-            },
-            txvAction = object : Action {
-                override fun execute() {
-                    dialogFilterTag(tagsSortedBy)
-                }
-            }
-        )
+            )
+        }
     }
 
     fun dialogFilterTag(listFilter: List<String>) {

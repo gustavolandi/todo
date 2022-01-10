@@ -21,7 +21,6 @@ import com.whiteelephant.monthpicker.MonthPickerDialog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.collections.sortedBy as sortedBy1
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var intentLauncher : ActivityResultLauncher<Intent>
     private var id : Int = 0
     private var spinnerSelected = 0
+    private var tagSelected = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,14 +53,37 @@ class MainActivity : AppCompatActivity() {
             activityAddItem()
             return true
         } else if (id == R.id.filterItem) {
-            filterOptions()
+            dialogFilter()
             return true
         }
         return super.onOptionsItemSelected(item)
     }
 
-    fun filterOptions(){
-        dialogFilter()
+    fun activityAddItem() {
+        intentLauncher.launch(Intent(this, AddItemActivity::class.java))
+    }
+
+    fun buildToDo(name: String?, date: String?, tags: MutableList<String> = mutableListOf()) {
+        val toDo = ToDo(++id, name ?: "", false, date ?: "", tags)
+        saveTodo(toDo)
+    }
+
+    fun saveTodo(toDo: ToDo) {
+        db.saveTodo(toDo)
+        getTodosDb()
+    }
+
+    fun getTodosDb() {
+        todoList = db.getToDo
+        todoList.sortBy { it.date }
+    }
+
+    fun addItemListView(todoList: MutableList<ToDo> = this.todoList){
+        if (listView.adapter != null) {
+            (listView.adapter as TodoAdapter).refresh(todoList)
+        } else {
+            listView.adapter = TodoAdapter(this, todoList)
+        }
     }
 
     fun dialogFilter() {
@@ -273,10 +296,8 @@ class MainActivity : AppCompatActivity() {
     fun filterByTag(){
         var tags : List<String> = db.getTags()
         val tagsSortedBy: List<String> = tags.sortedWith( compareBy(String.CASE_INSENSITIVE_ORDER) { it })
-        var tagSelected = 0
         val todoListFiltered = todoList.filter {it.tags.contains(tagsSortedBy[tagSelected])}
         addItemListView(todoListFiltered.toMutableList())
-        val context = this
         filterLayout(tagsSortedBy[tagSelected],
             nextAction = object : Action {
                 override fun execute() {
@@ -302,11 +323,37 @@ class MainActivity : AppCompatActivity() {
             },
             txvAction = object : Action {
                 override fun execute() {
-
+                    dialogFilterTag(tagsSortedBy)
                 }
             }
         )
+    }
 
+    fun dialogFilterTag(listFilter: List<String>) {
+        val dataAdapter: ArrayAdapter<String> = ArrayAdapter(
+            this,
+            R.layout.spinner_layout, listFilter
+        )
+        val context = this
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        with(Dialog(context)) {
+            setContentView(R.layout.dialog_filter)
+            setCancelable(true)
+            setCanceledOnTouchOutside(true)
+            val spinner = findViewById<RelativeLayout>(R.id.spinnerFilterTodo) as Spinner
+            spinner.adapter = dataAdapter
+            spinner.setSelection(tagSelected)
+            val btnOk = findViewById<RelativeLayout>(R.id.btnSubmitFilterTodo) as RelativeLayout
+            btnOk.setOnClickListener {
+                tagSelected = spinner.selectedItemPosition
+                val todoListFiltered = todoList.filter {it.tags.contains(listFilter[tagSelected])}
+                addItemListView(todoListFiltered.toMutableList())
+                val txv : TextView = context.findViewById(R.id.txvTodoFilter)
+                txv.text = listFilter[tagSelected]
+                dismiss()
+            }
+            show()
+        }
     }
 
     fun initComponents() {
@@ -327,33 +374,6 @@ class MainActivity : AppCompatActivity() {
                     addItemListView()
                 }
             }
-    }
-
-    fun activityAddItem() {
-        intentLauncher.launch(Intent(this, AddItemActivity::class.java))
-    }
-
-    fun buildToDo(name: String?, date: String?, tags: MutableList<String> = mutableListOf()) {
-        val toDo = ToDo(++id, name ?: "", false, date ?: "", tags)
-        saveTodo(toDo)
-    }
-
-    fun saveTodo(toDo: ToDo) {
-        db.saveTodo(toDo)
-        getTodosDb()
-    }
-
-    fun getTodosDb() {
-        todoList = db.getToDo
-        todoList.sortBy { it.date }
-    }
-
-    fun addItemListView(todoList: MutableList<ToDo> = this.todoList){
-        if (listView.adapter != null) {
-            (listView.adapter as TodoAdapter).refresh(todoList)
-        } else {
-            listView.adapter = TodoAdapter(this, todoList)
-        }
     }
 
     companion object {

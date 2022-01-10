@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listView : ListView
     private lateinit var intentLauncher : ActivityResultLauncher<Intent>
     private var id : Int = 0
+    private var spinnerSelected = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,8 +75,10 @@ class MainActivity : AppCompatActivity() {
             setCanceledOnTouchOutside(true)
             val spinner = findViewById<RelativeLayout>(R.id.spinnerFilterTodo) as Spinner
             spinner.adapter = dataAdapter
+            spinner.setSelection(spinnerSelected)
             val btnOk = findViewById<RelativeLayout>(R.id.btnSubmitFilterTodo) as RelativeLayout
             btnOk.setOnClickListener {
+                spinnerSelected = spinner.selectedItemPosition
                 when(spinner.selectedItem.toString()) {
                     NO_FILTER -> noFilter()
                     FILTER_DAY -> filterByDay()

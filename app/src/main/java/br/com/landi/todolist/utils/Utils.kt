@@ -1,6 +1,7 @@
 package br.com.landi.todolist.utils
 
 import android.content.Context
+import android.os.Build
 import android.widget.Toast
 import br.com.landi.todolist.model.ToDo
 
@@ -13,6 +14,11 @@ class Utils {
 
         fun toastMessage(context: Context, message: String, duration: Int = Toast.LENGTH_LONG) {
             Toast.makeText(context,message,duration).show()
+        }
+
+
+        fun validateBuildSdk() : Boolean {
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
         }
 
         fun exampleTodo() : MutableList<ToDo> {

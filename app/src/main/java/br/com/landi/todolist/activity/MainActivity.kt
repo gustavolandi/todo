@@ -21,6 +21,7 @@ import br.com.landi.todolist.repository.SQLiteHelper
 import br.com.landi.todolist.adapter.TodoAdapter
 import br.com.landi.todolist.model.ToDo
 import br.com.landi.todolist.utils.Utils
+import br.com.landi.todolist.utils.Utils.Companion.validateBuildSdk
 import com.whiteelephant.monthpicker.MonthPickerDialog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -277,10 +278,6 @@ class MainActivity : AppCompatActivity() {
             TODO("VERSION.SDK_INT < O")
         }
 
-    }
-
-    fun validateBuildSdk() : Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
     }
 
     fun getMonth(month: Int) : String {

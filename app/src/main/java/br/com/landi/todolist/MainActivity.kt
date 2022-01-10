@@ -309,10 +309,7 @@ class MainActivity : AppCompatActivity() {
                         if (++tagSelected >= tagsSortedBy.size) {
                             tagSelected = 0
                         }
-                        val todoListFiltered = todoList.filter {it.tags.contains(tagsSortedBy[tagSelected])}
-                        addItemListView(todoListFiltered.toMutableList())
-                        val txv : TextView = findViewById(R.id.txvTodoFilter)
-                        txv.text = tagsSortedBy[tagSelected]
+                        filterTag(tagsSortedBy)
                     }
                 },
                 backAction = object : Action {
@@ -320,10 +317,7 @@ class MainActivity : AppCompatActivity() {
                         if (--tagSelected < 0) {
                             tagSelected = tagsSortedBy.size - 1
                         }
-                        val todoListFiltered = todoList.filter {it.tags.contains(tagsSortedBy[tagSelected])}
-                        addItemListView(todoListFiltered.toMutableList())
-                        val txv : TextView = findViewById(R.id.txvTodoFilter)
-                        txv.text = tagsSortedBy[tagSelected]
+                        filterTag(tagsSortedBy)
                     }
                 },
                 txvAction = object : Action {
@@ -333,6 +327,13 @@ class MainActivity : AppCompatActivity() {
                 }
             )
         }
+    }
+
+    fun filterTag(tags: List<String>) {
+        val todoListFiltered = todoList.filter {it.tags.contains(tags[tagSelected])}
+        addItemListView(todoListFiltered.toMutableList())
+        val txv : TextView = findViewById(R.id.txvTodoFilter)
+        txv.text = tags[tagSelected]
     }
 
     fun dialogFilterTag(listFilter: List<String>) {
@@ -352,10 +353,7 @@ class MainActivity : AppCompatActivity() {
             val btnOk = findViewById<RelativeLayout>(R.id.btnSubmitFilterTodo) as RelativeLayout
             btnOk.setOnClickListener {
                 tagSelected = spinner.selectedItemPosition
-                val todoListFiltered = todoList.filter {it.tags.contains(listFilter[tagSelected])}
-                addItemListView(todoListFiltered.toMutableList())
-                val txv : TextView = context.findViewById(R.id.txvTodoFilter)
-                txv.text = listFilter[tagSelected]
+                filterTag(listFilter)
                 dismiss()
             }
             show()

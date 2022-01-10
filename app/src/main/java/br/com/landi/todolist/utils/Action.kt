@@ -1,4 +1,4 @@
-package br.com.landi.todolist
+package br.com.landi.todolist.utils
 
 interface Action {
     fun execute()

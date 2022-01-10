@@ -1,4 +1,4 @@
-package br.com.landi.todolist
+package br.com.landi.todolist.repository
 
 import android.content.ContentValues
 import android.content.Context

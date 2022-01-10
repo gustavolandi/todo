@@ -1,4 +1,4 @@
-package br.com.landi.todolist
+package br.com.landi.todolist.activity
 
 import android.app.Activity
 import android.app.DatePickerDialog
@@ -15,6 +15,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import br.com.landi.todolist.utils.Action
+import br.com.landi.todolist.R
+import br.com.landi.todolist.repository.SQLiteHelper
+import br.com.landi.todolist.adapter.TodoAdapter
 import br.com.landi.todolist.model.ToDo
 import br.com.landi.todolist.utils.Utils
 import com.whiteelephant.monthpicker.MonthPickerDialog
@@ -76,7 +80,7 @@ class MainActivity : AppCompatActivity() {
     fun getTodosDb() {
         todoList = db.getToDo
         if (validateBuildSdk()) {
-            todoList.sortBy { LocalDate.parse(it.date,DATE_PATTERN) }
+            todoList.sortBy { LocalDate.parse(it.date, DATE_PATTERN) }
         } else {
             TODO("VERSION.SDK_INT < O")
         }

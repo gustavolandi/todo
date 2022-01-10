@@ -1,4 +1,4 @@
-package br.com.landi.todolist
+package br.com.landi.todolist.activity
 
 import android.app.Activity
 import android.app.DatePickerDialog
@@ -6,10 +6,10 @@ import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.EditText
 import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
+import br.com.landi.todolist.R
 import br.com.landi.todolist.utils.Utils.Companion.TODO_DATE
 import br.com.landi.todolist.utils.Utils.Companion.TODO_NAME
 import br.com.landi.todolist.utils.Utils.Companion.TODO_TAGS

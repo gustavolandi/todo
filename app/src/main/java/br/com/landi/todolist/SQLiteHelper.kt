@@ -60,6 +60,16 @@ class SQLiteHelper(private val context: Context) :
         }
         return tagMap
     }
+
+    fun getTags() : List<String> {
+        val db = this.readableDatabase
+        val tagList: MutableList<String> = mutableListOf()
+        val cursor = db.rawQuery("SELECT * FROM $TBX_TAGS", null)
+        while(cursor.moveToNext()) {
+            tagList.add(cursor.getString(cursor.getColumnIndex(NAME_TAG)))
+        }
+        return tagList
+    }
     
     fun saveTagsToDo(tagMap: MutableList<Long>, id: Long) {
         val db = this.writableDatabase

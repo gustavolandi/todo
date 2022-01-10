@@ -21,6 +21,7 @@ import com.whiteelephant.monthpicker.MonthPickerDialog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.collections.sortedBy as sortedBy1
 
 
 class MainActivity : AppCompatActivity() {
@@ -127,7 +128,6 @@ class MainActivity : AppCompatActivity() {
                 },
                 object : Action {
                     override fun execute() {
-                        val cal = Calendar.getInstance()
                         DatePickerDialog(
                             context,
                             { view, selectedYear, selectedMonth, selectedDay ->
@@ -216,7 +216,7 @@ class MainActivity : AppCompatActivity() {
                 object : Action {
                     override fun execute() {
                         val calendar = Calendar.getInstance()
-                        val builder = MonthPickerDialog.Builder(
+                        MonthPickerDialog.Builder(
                             context,
                             { selectedMonth, selectedYear ->
                                 date = LocalDate.of(selectedYear,selectedMonth+1,1)
@@ -231,7 +231,6 @@ class MainActivity : AppCompatActivity() {
                             calendar[Calendar.YEAR],
                             calendar[Calendar.MONTH]
                         )
-                        builder
                             .setMinYear(1990)
                             .setActivatedYear(date.year)
                             .setActivatedMonth(date.monthValue - 1)
@@ -272,6 +271,41 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun filterByTag(){
+        var tags : List<String> = db.getTags()
+        val tagsSortedBy: List<String> = tags.sortedWith( compareBy(String.CASE_INSENSITIVE_ORDER) { it })
+        var tagSelected = 0
+        val todoListFiltered = todoList.filter {it.tags.contains(tagsSortedBy[tagSelected])}
+        addItemListView(todoListFiltered.toMutableList())
+        val context = this
+        filterLayout(tagsSortedBy[tagSelected],
+            nextAction = object : Action {
+                override fun execute() {
+                    if (++tagSelected >= tagsSortedBy.size) {
+                        tagSelected = 0
+                    }
+                    val todoListFiltered = todoList.filter {it.tags.contains(tagsSortedBy[tagSelected])}
+                    addItemListView(todoListFiltered.toMutableList())
+                    val txv : TextView = findViewById(R.id.txvTodoFilter)
+                    txv.text = tagsSortedBy[tagSelected]
+                }
+            },
+            backAction = object : Action {
+                override fun execute() {
+                    if (--tagSelected < 0) {
+                        tagSelected = tagsSortedBy.size - 1
+                    }
+                    val todoListFiltered = todoList.filter {it.tags.contains(tagsSortedBy[tagSelected])}
+                    addItemListView(todoListFiltered.toMutableList())
+                    val txv : TextView = findViewById(R.id.txvTodoFilter)
+                    txv.text = tagsSortedBy[tagSelected]
+                }
+            },
+            txvAction = object : Action {
+                override fun execute() {
+
+                }
+            }
+        )
 
     }
 

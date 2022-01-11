@@ -1,9 +1,11 @@
 package br.com.landi.todolist.dialog
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import br.com.landi.todolist.activity.MainActivity
 import br.com.landi.todolist.utils.Action
 import com.whiteelephant.monthpicker.MonthPickerDialog
 import java.time.LocalDate
@@ -20,7 +22,7 @@ class CustomDialog(private val context: Context) {
         with(AlertDialog.Builder(context)) {
             setTitle(title)
             setMessage(message)
-            setCancelable(false)
+            setCancelable(cancelable)
             setNegativeButton(textNegativeButton) { dialog, id -> dialog.cancel() }
             setPositiveButton(textPositiveButton) { dialog, id -> action.execute() }
             create().show()
@@ -44,6 +46,19 @@ class CustomDialog(private val context: Context) {
             setTitle(title)
             build().show()
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun showDatePickerDialog(date: LocalDate, action: Action) {
+        DatePickerDialog(
+            context,
+            { view, selectedYear, selectedMonth, selectedDay ->
+                action.execute(selectedYear, selectedMonth, selectedDay)
+            },
+            date.year,
+            date.monthValue-1,
+            date.dayOfMonth
+        ).show()
     }
 
 }

@@ -1,7 +1,6 @@
 package br.com.landi.todolist.activity
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Intent
@@ -152,32 +151,30 @@ class MainActivity : AppCompatActivity() {
                 },
                 txvAction = object : Action {
                     override fun execute() {
-                        DatePickerDialog(
-                            context,
-                            { view, selectedYear, selectedMonth, selectedDay ->
-                                var mes = selectedMonth + 1
-                                var dia = selectedDay
-                                val year1 = selectedYear.toString()
-                                var month1 = (selectedMonth + 1).toString()
-                                var day1 = selectedDay.toString()
-                                if (dia < 10) {
-                                    day1 = "0$day1"
+                        with(CustomDialog(context)) {
+                            showDatePickerDialog(date,
+                            object : Action {
+                                override fun execute(selectedYear: Int, selectedMonth: Int, selectedDay: Int) {
+                                    var mes = selectedMonth + 1
+                                    var dia = selectedDay
+                                    val year1 = selectedYear.toString()
+                                    var month1 = (selectedMonth + 1).toString()
+                                    var day1 = selectedDay.toString()
+                                    if (dia < 10) {
+                                        day1 = "0$day1"
+                                    }
+                                    if (mes < 10) {
+                                        month1 = "0$month1"
+                                    }
+                                    val dateFormatted = "$day1/$month1/$year1"
+                                    date = LocalDate.parse(
+                                        dateFormatted,
+                                        DATE_PATTERN
+                                    )
+                                    filterDay(dateFormatted)
                                 }
-                                if (mes < 10) {
-                                    month1 = "0$month1"
-                                }
-                                val dateFormatted = "$day1/$month1/$year1"
-                                date = LocalDate.parse(
-                                    dateFormatted,
-                                    DATE_PATTERN
-                                )
-                                filterDay(dateFormatted)
-                            },
-                            date.year,
-                            date.monthValue-1,
-                            date.dayOfMonth
-                        ).show()
-
+                            })
+                        }
                     }
                 }
             )

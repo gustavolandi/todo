@@ -133,32 +133,22 @@ class MainActivity : AppCompatActivity() {
     fun filterByDay() {
         if (validateBuildSdk()) {
             var date =  LocalDate.now()
-            val dateToday = dateFormmated(date)
-            val todoListFiltered = todoList.filter { it.date == dateToday }
-            addItemListView(todoListFiltered.toMutableList())
+            filterDay(dateFormmated(date))
             val context = this
-            filterLayout(dateToday,
-                object : Action {
+            filterLayout(
+                backAction = object : Action {
                     override fun execute() {
                         date = date.minusDays(1)
-                        val dateFormatted = dateFormmated(date)
-                        val todoListFiltered = todoList.filter { it.date == dateFormatted }
-                        addItemListView(todoListFiltered.toMutableList())
-                        val txv: TextView = findViewById(R.id.txvTodoFilter)
-                        txv.text = dateFormatted
+                        filterDay(dateFormmated(date))
                     }
                 },
-                object : Action {
+                nextAction = object : Action {
                     override fun execute() {
                         date = date.plusDays(1)
-                        val dateFormatted = dateFormmated(date)
-                        val todoListFiltered = todoList.filter { it.date == dateFormatted }
-                        addItemListView(todoListFiltered.toMutableList())
-                        val txv: TextView = findViewById(R.id.txvTodoFilter)
-                        txv.text = dateFormatted
+                        filterDay(dateFormmated(date))
                     }
                 },
-                object : Action {
+                txvAction = object : Action {
                     override fun execute() {
                         DatePickerDialog(
                             context,
@@ -179,10 +169,7 @@ class MainActivity : AppCompatActivity() {
                                     dateFormatted,
                                     DATE_PATTERN
                                 )
-                                val todoListFiltered = todoList.filter { it.date == dateFormatted }
-                                addItemListView(todoListFiltered.toMutableList())
-                                val txv: TextView = findViewById(R.id.txvTodoFilter)
-                                txv.text = dateFormatted
+                                filterDay(dateFormatted)
                             },
                             date.year,
                             date.monthValue-1,
@@ -196,14 +183,19 @@ class MainActivity : AppCompatActivity() {
             TODO("VERSION.SDK_INT < O")
         }
 
-
     }
 
-    fun filterLayout(text: String, backAction: Action, nextAction: Action, txvAction: Action) {
+    fun filterDay(dateFormatted : String) {
+        val todoListFiltered = todoList.filter { it.date == dateFormatted }
+        addItemListView(todoListFiltered.toMutableList())
+        val txv: TextView = findViewById(R.id.txvTodoFilter)
+        txv.text = dateFormatted
+    }
+
+    fun filterLayout(backAction: Action, nextAction: Action, txvAction: Action) {
         val linearLayoutFilter : LinearLayout = findViewById(R.id.linearLayoutFilter)
         linearLayoutFilter.visibility = VISIBLE
         val txv : TextView = findViewById(R.id.txvTodoFilter)
-        txv.text = text
         val imgBack : ImageView = findViewById(R.id.imgBackFilterDay)
         val imgNext : ImageView = findViewById(R.id.imgNextFilterDay)
         imgBack.setOnClickListener { backAction.execute() }
@@ -214,51 +206,29 @@ class MainActivity : AppCompatActivity() {
     fun filterByMonth() {
         if (validateBuildSdk()) {
             var date = LocalDate.now()
-            val todoListFiltered = todoList.filter {
-                it.date.substring(3, 5).toInt() == date.month.value &&
-                    it.date.substring(6).toInt() == date.year
-            }
-            addItemListView(todoListFiltered.toMutableList())
+            filterMonth(date)
             val context = this
-            filterLayout("${getMonth(date.month.value)} / ${date.year}",
-                object : Action {
+            filterLayout(
+                backAction = object : Action {
                     override fun execute() {
                         date = date.minusMonths(1)
-                        val todoListFiltered = todoList.filter {
-                            it.date.substring(3, 5).toInt() == date.month.value &&
-                                    it.date.substring(6).toInt() == date.year
-                        }
-                        addItemListView(todoListFiltered.toMutableList())
-                        val txv: TextView = findViewById(R.id.txvTodoFilter)
-                        txv.text = "${getMonth(date.month.value)} / ${date.year}"
+                        filterMonth(date)
                     }
                 },
-                object : Action {
+                nextAction = object : Action {
                     override fun execute() {
                         date = date.plusMonths(1)
-                        val todoListFiltered = todoList.filter {
-                            it.date.substring(3, 5).toInt() == date.month.value &&
-                                    it.date.substring(6).toInt() == date.year
-                        }
-                        addItemListView(todoListFiltered.toMutableList())
-                        val txv: TextView = findViewById(R.id.txvTodoFilter)
-                        txv.text = "${getMonth(date.month.value)} / ${date.year}"
+                        filterMonth(date)
                     }
                 },
-                object : Action {
+                txvAction = object : Action {
                     override fun execute() {
                         val calendar = Calendar.getInstance()
                         MonthPickerDialog.Builder(
                             context,
                             { selectedMonth, selectedYear ->
                                 date = LocalDate.of(selectedYear,selectedMonth+1,1)
-                                val todoListFiltered = todoList.filter {
-                                    it.date.substring(3, 5).toInt() == date.month.value &&
-                                            it.date.substring(6).toInt() == date.year
-                                }
-                                addItemListView(todoListFiltered.toMutableList())
-                                val txv: TextView = findViewById(R.id.txvTodoFilter)
-                                txv.text = "${getMonth(date.month.value)} / ${date.year}"
+                                filterMonth(date)
                             },
                             calendar[Calendar.YEAR],
                             calendar[Calendar.MONTH]
@@ -278,6 +248,17 @@ class MainActivity : AppCompatActivity() {
             TODO("VERSION.SDK_INT < O")
         }
 
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun filterMonth(date: LocalDate) {
+        val todoListFiltered = todoList.filter {
+            it.date.substring(3, 5).toInt() == date.month.value &&
+                    it.date.substring(6).toInt() == date.year
+        }
+        addItemListView(todoListFiltered.toMutableList())
+        val txv: TextView = findViewById(R.id.txvTodoFilter)
+        txv.text = "${getMonth(date.month.value)} / ${date.year}"
     }
 
     fun getMonth(month: Int) : String {
@@ -302,9 +283,8 @@ class MainActivity : AppCompatActivity() {
         var tags : List<String> = db.getTags()
         if (tags.size > 0) {
             val tagsSortedBy: List<String> = tags.sortedWith( compareBy(String.CASE_INSENSITIVE_ORDER) { it })
-            val todoListFiltered = todoList.filter {it.tags.contains(tagsSortedBy[tagSelected])}
-            addItemListView(todoListFiltered.toMutableList())
-            filterLayout(tagsSortedBy[tagSelected],
+            filterTag(tagsSortedBy)
+            filterLayout(
                 nextAction = object : Action {
                     override fun execute() {
                         if (++tagSelected >= tagsSortedBy.size) {

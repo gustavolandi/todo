@@ -13,22 +13,14 @@ class AlertDialog(private val context: Context) {
     var textPositiveButton = "Sim"
 
     fun showDialog(action: Action) {
-        val alertDialogBuilder = AlertDialog.Builder(context)
-        alertDialogBuilder.setTitle(title)
-        alertDialogBuilder
-            .setMessage(message)
-            .setCancelable(false)
-            .setNegativeButton(
-                textNegativeButton
-            ) { dialog, id -> dialog.cancel() }
-            .setPositiveButton(
-                textPositiveButton
-            ) { dialog, id ->
-                action.execute()
-            }
-
-        val alertDialog = alertDialogBuilder.create()
-        alertDialog.show()
+        with(AlertDialog.Builder(context)) {
+            setTitle(title)
+            setMessage(message)
+            setCancelable(false)
+            setNegativeButton(textNegativeButton) { dialog, id -> dialog.cancel() }
+            setPositiveButton(textPositiveButton) { dialog, id -> action.execute() }
+            create().show()
+        }
     }
 
 }

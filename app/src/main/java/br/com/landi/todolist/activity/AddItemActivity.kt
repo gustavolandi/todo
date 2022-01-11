@@ -68,7 +68,7 @@ class AddItemActivity : AppCompatActivity() {
                 var tags = if (edtTags.text.toString().trim().isEmpty()) {
                     ArrayList()
                 } else {
-                    ArrayList(edtTags.text.toString().split(";"))
+                    ArrayList(edtTags.text.toString().split(" ").filter { it.isNotEmpty() })
                 }
                 with(Intent()) {
                     putExtra(TODO_NAME, edtName.text.toString())

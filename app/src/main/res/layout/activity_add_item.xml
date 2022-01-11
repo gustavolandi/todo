@@ -25,7 +25,7 @@
         android:layout_marginRight="15dp"
         android:hint="Data"/>
 
-    <EditText
+    <br.com.landi.todolist.view.TagEditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/edtTags"

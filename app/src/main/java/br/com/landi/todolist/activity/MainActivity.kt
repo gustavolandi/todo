@@ -1,7 +1,6 @@
 package br.com.landi.todolist.activity
 
 import android.app.Activity
-import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Intent
 import android.os.Build
@@ -23,11 +22,8 @@ import br.com.landi.todolist.dialog.CustomDialog
 import br.com.landi.todolist.model.ToDo
 import br.com.landi.todolist.utils.Utils
 import br.com.landi.todolist.utils.Utils.Companion.validateBuildSdk
-import com.whiteelephant.monthpicker.MonthPickerDialog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
-
 
 class MainActivity : AppCompatActivity() {
 

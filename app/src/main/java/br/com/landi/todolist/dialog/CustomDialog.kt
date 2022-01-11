@@ -5,7 +5,6 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
-import br.com.landi.todolist.activity.MainActivity
 import br.com.landi.todolist.utils.Action
 import com.whiteelephant.monthpicker.MonthPickerDialog
 import java.time.LocalDate

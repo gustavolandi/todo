@@ -89,24 +89,23 @@ class SQLiteHelper(private val context: Context) :
         return id
     }
 
-    val getToDo: MutableList<ToDo>
-        get() {
-            val db = this.readableDatabase
-            val cursor = db.rawQuery("SELECT * FROM $TBX_TODO", null)
-            val todoList: MutableList<ToDo> = mutableListOf()
-            while (cursor.moveToNext()) {
-                todoList.add(
-                    ToDo(cursor.getInt(cursor.getColumnIndex(ID)),
-                        cursor.getString(cursor.getColumnIndex(NAME)),
-                        cursor.getInt(cursor.getColumnIndex(NAME)) == 1,
-                        cursor.getString(cursor.getColumnIndex(DATE)),
-                        getTagsByItem(db,cursor.getLong(cursor.getColumnIndex(ID))
-                        )
+    fun getToDo(): MutableList<ToDo> {
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TBX_TODO", null)
+        val todoList: MutableList<ToDo> = mutableListOf()
+        while (cursor.moveToNext()) {
+            todoList.add(
+                ToDo(cursor.getInt(cursor.getColumnIndex(ID)),
+                    cursor.getString(cursor.getColumnIndex(NAME)),
+                    cursor.getInt(cursor.getColumnIndex(NAME)) == 1,
+                    cursor.getString(cursor.getColumnIndex(DATE)),
+                    getTagsByItem(db,cursor.getLong(cursor.getColumnIndex(ID))
                     )
                 )
-            }
-            return todoList
+            )
         }
+        return todoList
+    }
 
     fun getTagsByItem(db: SQLiteDatabase,id : Long) : MutableList<String> {
         val cursor = db.rawQuery("SELECT $ID_TAG FROM $TBX_TAGS_TODO WHERE $ID_TODO = $id", null)

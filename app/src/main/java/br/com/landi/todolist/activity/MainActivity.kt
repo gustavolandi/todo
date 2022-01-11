@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getTodosDb() {
-        todoList = db.getToDo
+        todoList = db.getToDo()
         if (validateBuildSdk()) {
             todoList.sortBy { LocalDate.parse(it.date, DATE_PATTERN) }
         } else {
@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun addItemListView(todoList: MutableList<ToDo> = this.todoList){
+    fun addItemListView(todoList: MutableList<ToDo> = this.todoList) {
         if (listView.adapter != null) {
             (listView.adapter as TodoAdapter).refresh(todoList)
         } else {

@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import android.widget.*
 import android.widget.RelativeLayout
 import br.com.landi.todolist.R
-import br.com.landi.todolist.dialog.AlertDialog
+import br.com.landi.todolist.dialog.CustomDialog
 import br.com.landi.todolist.model.ToDo
 import br.com.landi.todolist.repository.SQLiteHelper
 import br.com.landi.todolist.utils.Action
@@ -45,7 +45,7 @@ class TodoAdapter(
 
         val imgDelete = v.findViewById<View>(R.id.imgDeleteItem) as ImageView
         imgDelete.setOnClickListener {
-            with(AlertDialog(context)) {
+            with(CustomDialog(context)) {
                 cancelable = true
                 message = "Deseja deletar o item selecionado?"
                 title = "Deletar Item"

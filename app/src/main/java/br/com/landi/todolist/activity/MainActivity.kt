@@ -1,6 +1,7 @@
 package br.com.landi.todolist.activity
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Intent
@@ -19,6 +20,7 @@ import br.com.landi.todolist.utils.Action
 import br.com.landi.todolist.R
 import br.com.landi.todolist.repository.SQLiteHelper
 import br.com.landi.todolist.adapter.TodoAdapter
+import br.com.landi.todolist.dialog.CustomDialog
 import br.com.landi.todolist.model.ToDo
 import br.com.landi.todolist.utils.Utils
 import br.com.landi.todolist.utils.Utils.Companion.validateBuildSdk
@@ -223,24 +225,16 @@ class MainActivity : AppCompatActivity() {
                 },
                 txvAction = object : Action {
                     override fun execute() {
-                        val calendar = Calendar.getInstance()
-                        MonthPickerDialog.Builder(
-                            context,
-                            { selectedMonth, selectedYear ->
-                                date = LocalDate.of(selectedYear,selectedMonth+1,1)
-                                filterMonth(date)
-                            },
-                            calendar[Calendar.YEAR],
-                            calendar[Calendar.MONTH]
-                        )
-                            .setMinYear(1990)
-                            .setActivatedYear(date.year)
-                            .setActivatedMonth(date.monthValue - 1)
-                            .setMaxYear(2030)
-                            .setTitle("Selecione o mês")
-                            .build()
-                            .show()
-
+                        with(CustomDialog(context)) {
+                            title = "Selecione o mês"
+                            showMonthDatePickerDialog(date,
+                                object : Action {
+                                    override fun execute(selectedMonth: Int,selectedYear : Int) {
+                                        date = LocalDate.of(selectedYear,selectedMonth+1,1)
+                                        filterMonth(date)
+                                    }
+                                })
+                        }
                     }
                 }
             )

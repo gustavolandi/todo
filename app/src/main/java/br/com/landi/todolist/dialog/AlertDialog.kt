@@ -2,6 +2,7 @@ package br.com.landi.todolist.dialog
 
 import android.app.AlertDialog
 import android.content.Context
+import br.com.landi.todolist.utils.Action
 
 class AlertDialog(private val context: Context) {
 
@@ -11,7 +12,7 @@ class AlertDialog(private val context: Context) {
     var textNegativeButton = "Não"
     var textPositiveButton = "Sim"
 
-    fun showDialog(action: Process) {
+    fun showDialog(action: Action) {
         val alertDialogBuilder = AlertDialog.Builder(context)
         alertDialogBuilder.setTitle(title)
         alertDialogBuilder
@@ -30,8 +31,4 @@ class AlertDialog(private val context: Context) {
         alertDialog.show()
     }
 
-}
-
-interface Process {
-    fun execute()
 }

@@ -10,10 +10,10 @@ import android.view.ViewGroup
 import android.widget.*
 import android.widget.RelativeLayout
 import br.com.landi.todolist.R
-import br.com.landi.todolist.repository.SQLiteHelper
 import br.com.landi.todolist.dialog.AlertDialog
-import br.com.landi.todolist.dialog.Process
 import br.com.landi.todolist.model.ToDo
+import br.com.landi.todolist.repository.SQLiteHelper
+import br.com.landi.todolist.utils.Action
 import br.com.landi.todolist.utils.Utils
 
 
@@ -49,7 +49,7 @@ class TodoAdapter(
                 cancelable = true
                 message = "Deseja deletar o item selecionado?"
                 title = "Deletar Item"
-                showDialog(object : Process {
+                showDialog(object : Action {
                     override fun execute() {
                         val db = SQLiteHelper(context)
                         db.deleteItemById(getItemId(position))
